@@ -5,12 +5,958 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Creative Kings</title>
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="main.css">
+  <style>
+    :root {
+      --primary: #6b38fb;
+      --secondary: #ff2cf7;
+      --accent: #1ceaff;
+      --dark: #0a0a18;
+      --darker: #05050f;
+      --light: #f8f9fc;
+      --text: #e6e6f0;
+      --text-muted: #9ca3af;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      background-color: var(--darker);
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top right, rgba(107, 56, 251, 0.1), transparent 50%),
+                  radial-gradient(circle at bottom left, rgba(28, 234, 255, 0.05), transparent 50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(107, 56, 251, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(107, 56, 251, 0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.1;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .blob {
+      position: fixed;
+      filter: blur(80px);
+      opacity: 0.2;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .blob-1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--primary), transparent 70%);
+      top: -200px;
+      right: -200px;
+      animation: float 20s infinite alternate ease-in-out;
+    }
+    
+    .blob-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--secondary), transparent 70%);
+      bottom: -100px;
+      left: -100px;
+      animation: float 15s infinite alternate-reverse ease-in-out;
+    }
+    
+    .blob-3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--accent), transparent 70%);
+      top: 50%;
+      left: 30%;
+      animation: float 25s infinite alternate ease-in-out;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+      50% {
+        transform: translate(50px, 50px) scale(1.1);
+      }
+      100% {
+        transform: translate(-50px, -30px) scale(0.9);
+      }
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 5%;
+      z-index: 1000;
+      backdrop-filter: blur(12px);
+      background: rgba(5, 5, 15, 0.8);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(107, 56, 251, 0.1);
+      transition: background 0.3s ease;
+    }
+    
+    header.scrolled {
+      background: rgba(5, 5, 15, 0.95);
+    }
+    
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--light);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 60%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 2px;
+    }
+    
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    
+    nav {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--light);
+    }
+    
+    nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.3s ease;
+    }
+    
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0 5%;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(107, 56, 251, 0.1), transparent 60%);
+      z-index: -1;
+    }
+    
+    .hero-content {
+      text-align: center;
+      max-width: 800px;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s forwards 0.5s;
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, var(--light), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.1;
+    }
+    
+    .hero p {
+      font-size: 1.5rem;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+    
+    .typing-text {
+      position: relative;
+      border-right: 3px solid var(--primary);
+      padding-right: 5px;
+      animation: typing 4s steps(40) infinite, blink 0.7s infinite;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    
+    @keyframes typing {
+      0%, 100% { width: 0 }
+      50% { width: 100% }
+    }
+    
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+    
+    .cta-button {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: var(--light);
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(107, 56, 251, 0.4);
+      position: relative;
+      overflow: hidden;
+      margin-top: 2rem;
+    }
+    
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+    
+    .cta-button:hover::before {
+      left: 100%;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(107, 56, 251, 0.6);
+    }
+
+    /* About Section */
+    section {
+      padding: 8rem 10%;
+      position: relative;
+    }
+    
+    section h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(45deg, var(--light), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      position: relative;
+      display: inline-block;
+    }
+    
+    section h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 2px;
+    }
+    
+    .about {
+      text-align: center;
+      background: rgba(5, 5, 15, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(107, 56, 251, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin: 100px 5% 0;
+      padding: 3rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .about.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .about p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Services Section */
+    .services {
+      text-align: center;
+    }
+    
+    .services h2 {
+      margin-bottom: 4rem;
+    }
+    
+    .service-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .service-card {
+      background: rgba(10, 10, 24, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      border: 1px solid rgba(107, 56, 251, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .service-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 18px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+    
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .service-card:hover {
+      transform: translateY(-5px) scale(1.02);
+    }
+    
+    .service-card:hover::before {
+      opacity: 1;
+    }
+    
+    .service-card i {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .service-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--light);
+    }
+    
+    .service-card p {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Portfolio Section */
+    .portfolio h2 {
+      margin-bottom: 4rem;
+    }
+    
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+    
+    .portfolio-item {
+      background: rgba(10, 10, 24, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid rgba(107, 56, 251, 0.1);
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .portfolio-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .portfolio-item img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+    
+    .portfolio-item:hover img {
+      transform: scale(1.05);
+    }
+    
+    .portfolio-item h3, .portfolio-item p {
+      padding: 0 1.5rem;
+    }
+    
+    .portfolio-item h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      margin: 1.5rem 0 0.5rem;
+      color: var(--light);
+    }
+    
+    .portfolio-item p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    
+    .portfolio-item::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 18px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+    
+    .portfolio-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .portfolio-item:hover::before {
+      opacity: 1;
+    }
+
+    /* Reviews Section */
+    .reviews {
+      text-align: center;
+    }
+    
+    .reviews h2 {
+      margin-bottom: 1rem;
+    }
+    
+    .reviews > p {
+      max-width: 600px;
+      margin: 0 auto 4rem;
+      color: var(--text-muted);
+    }
+    
+    .reviews-container {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .reviews-slider {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 2rem;
+      padding: 1rem 0.5rem;
+      scrollbar-width: none; /* For Firefox */
+      -ms-overflow-style: none; /* For IE and Edge */
+    }
+    
+    .reviews-slider::-webkit-scrollbar {
+      display: none; /* For Chrome, Safari, and Opera */
+    }
+    
+    .review-card {
+      flex: 0 0 90%;
+      scroll-snap-align: center;
+      background: rgba(10, 10, 24, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(107, 56, 251, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    @media (min-width: 768px) {
+      .review-card {
+        flex: 0 0 calc(50% - 1rem);
+      }
+    }
+    
+    @media (min-width: 1200px) {
+      .review-card {
+        flex: 0 0 calc(33.333% - 1.33rem);
+      }
+    }
+    
+    .review-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 18px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background-size: 400% 400%;
+    }
+    
+    .review-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .review-card:hover::before {
+      opacity: 1;
+    }
+    
+    .review-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .reviewer-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+    
+    .reviewer-info {
+      text-align: left;
+      margin-left: 1rem;
+    }
+    
+    .reviewer-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      margin-bottom: 0.2rem;
+      color: var(--light);
+    }
+    
+    .reviewer-title {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    .review-text {
+      text-align: left;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    
+    .review-rating {
+      color: var(--accent);
+    }
+    
+    .slider-nav {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+    
+    .prev-btn, .next-btn {
+      background: rgba(107, 56, 251, 0.2);
+      border: 1px solid rgba(107, 56, 251, 0.3);
+      color: var(--light);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .prev-btn:hover, .next-btn:hover {
+      background: rgba(107, 56, 251, 0.4);
+    }
+
+    /* Contact Section */
+    .contact {
+      text-align: center;
+      background: radial-gradient(circle at center, rgba(10, 10, 24, 0.8), rgba(5, 5, 15, 0.95));
+      padding-bottom: 6rem;
+    }
+    
+    .contact form {
+      max-width: 600px;
+      margin: 4rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .contact input, .contact textarea {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(107, 56, 251, 0.2);
+      padding: 1rem;
+      color: var(--light);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+    
+    .contact input:focus, .contact textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .contact button {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: var(--light);
+      border: none;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .contact button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+    
+    .contact button:hover::before {
+      left: 100%;
+    }
+    
+    .contact button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(107, 56, 251, 0.4);
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(5, 5, 15, 0.95);
+      padding: 2rem 5%;
+      text-align: center;
+      border-top: 1px solid rgba(107, 56, 251, 0.1);
+    }
+    
+    footer p {
+      color: var(--text-muted);
+    }
+    
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    footer a:hover {
+      color: var(--light);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem 5%;
+      }
+      
+      .menu-toggle {
+        display: block;
+      }
+      
+      nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 400px;
+        height: 100vh;
+        background: rgba(5, 5, 15, 0.95);
+        backdrop-filter: blur(12px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+        transition: right 0.5s ease;
+        z-index: 1000;
+        box-shadow: -5px 0 30px rgba(0, 0, 0, 0.3);
+      }
+      
+      nav.active {
+        right: 0;
+      }
+      
+      nav a {
+        font-size: 1.2rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .hero p {
+        font-size: 1.2rem;
+      }
+      
+      section {
+        padding: 5rem 5%;
+      }
+      
+      .about {
+        padding: 2rem;
+      }
+      
+      .about p {
+        font-size: 1rem;
+      }
+      
+      .service-cards, .portfolio-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      section h2 {
+        font-size: 2rem;
+      }
+      
+      .review-card {
+        flex: 0 0 100%;
+      }
+    }
+
+    /* Glitch Effects */
+    .glitch {
+      position: relative;
+    }
+    
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--darker);
+      clip: rect(0, 0, 0, 0);
+    }
+    
+    .glitch::before {
+      left: 2px;
+      text-shadow: -1px 0 var(--primary);
+      animation: glitch-anim-1 2s infinite linear alternate-reverse;
+    }
+    
+    .glitch::after {
+      left: -2px;
+      text-shadow: 1px 0 var(--secondary);
+      animation: glitch-anim-2 3s infinite linear alternate-reverse;
+    }
+    
+    @keyframes glitch-anim-1 {
+      0% {
+        clip: rect(30px, 9999px, 20px, 0);
+      }
+      10% {
+        clip: rect(56px, 9999px, 70px, 0);
+      }
+      20% {
+        clip: rect(27px, 9999px, 40px, 0);
+      }
+      30% {
+        clip: rect(81px, 9999px, 91px, 0);
+      }
+      40% {
+        clip: rect(42px, 9999px, 46px, 0);
+      }
+      50% {
+        clip: rect(21px, 9999px, 59px, 0);
+      }
+      60% {
+        clip: rect(86px, 9999px, 82px, 0);
+      }
+      70% {
+        clip: rect(23px, 9999px, 56px, 0);
+      }
+      80% {
+        clip: rect(61px, 9999px, 93px, 0);
+      }
+      90% {
+        clip: rect(45px, 9999px, 46px, 0);
+      }
+      100% {
+        clip: rect(83px, 9999px, 96px, 0);
+      }
+    }
+    
+    @keyframes glitch-anim-2 {
+      0% {
+        clip: rect(70px, 9999px, 90px, 0);
+      }
+      10% {
+        clip: rect(29px, 9999px, 36px, 0);
+      }
+      20% {
+        clip: rect(57px, 9999px, 40px, 0);
+      }
+      30% {
+        clip: rect(26px, 9999px, 20px, 0);
+      }
+      40% {
+        clip: rect(59px, 9999px, 71px, 0);
+      }
+      50% {
+        clip: rect(35px, 9999px, 69px, 0);
+      }
+      60% {
+        clip: rect(81px, 9999px, 2px, 0);
+      }
+      70% {
+        clip: rect(73px, 9999px, 46px, 0);
+      }
+      80% {
+        clip: rect(52px, 9999px, 35px, 0);
+      }
+      90% {
+        clip: rect(41px, 9999px, 16px, 0);
+      }
+      100% {
+        clip: rect(37px, 9999px, 46px, 0);
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Background Effects -->
+  <div class="grid-overlay"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
   <!-- Header -->
   <header>
     <div class="logo">Creative Kings</div>
@@ -30,19 +976,17 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <h1>Creative Kings Ad Agency</h1>
+      <h1 class="glitch" data-text="Creative Kings Ad Agency">Creative Kings Ad Agency</h1>
       <p><span class="typing-text">We Create Stunning Campaigns That Drive Results</span></p>
+      <button class="cta-button">Get Started</button>
     </div>
   </section>
 
   <!-- About Section -->
   <section id="about" class="about">
     <h2>About Us</h2>
-    <p>
-      We are a full-service ad agency specializing in creating innovative and impactful marketing campaigns. 
-      Our team of experts is dedicated to helping your brand stand out in a crowded marketplace. 
-      With years of experience and a passion for creativity, we deliver results that exceed expectations.
-    </p>
+    <p>Creative Kings is a forward-thinking advertising agency specializing in digital marketing, brand development, and creative campaigns. With over a decade of experience, our team of passionate creatives and strategic thinkers work together to deliver exceptional results that help businesses stand out in today's competitive landscape.</p>
+    <p>We believe that great advertising is the perfect blend of art and science - creative enough to capture attention and strategic enough to drive real business results. Our data-driven approach ensures that every campaign we create not only looks stunning but also performs exceptionally well.</p>
   </section>
 
   <!-- Services Section -->
@@ -51,73 +995,90 @@
     <div class="service-cards">
       <div class="service-card">
         <i class="fas fa-paint-brush"></i>
-        <h3>Creative Design</h3>
-        <p>We craft visually stunning designs that capture your brand's essence and resonate with your target audience.</p>
+        <h3>Brand Identity</h3>
+        <p>We craft unique, memorable brand identities that resonate with your target audience and set you apart from competitors. From logos to complete brand guidelines, we've got you covered.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-bullhorn"></i>
+        <h3>Digital Marketing</h3>
+        <p>Our comprehensive digital marketing services include SEO, PPC, social media management, and content marketing strategies that drive traffic, engagement, and conversions.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-video"></i>
+        <h3>Video Production</h3>
+        <p>From concept to final cut, our video production team creates compelling visual content that tells your story and captivates your audience across all platforms.</p>
       </div>
       <div class="service-card">
         <i class="fas fa-chart-line"></i>
-        <h3>Digital Marketing</h3>
-        <p>Our digital strategies drive engagement and conversions through targeted campaigns and data-driven insights.</p>
+        <h3>Analytics & Optimization</h3>
+        <p>We meticulously track campaign performance and continually optimize to ensure maximum ROI, providing detailed reports and insights to guide future strategy.</p>
       </div>
       <div class="service-card">
-        <i class="fas fa-lightbulb"></i>
-        <h3>Brand Strategy</h3>
-        <p>We help you build a strong and recognizable brand identity that sets you apart from competitors.</p>
+        <i class="fas fa-globe"></i>
+        <h3>Web Development</h3>
+        <p>Our team creates stunning, responsive websites that not only look amazing but also convert visitors into customers, with a focus on user experience and performance.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-comments"></i>
+        <h3>Social Media</h3>
+        <p>We develop and execute social media strategies that build community, increase engagement, and drive brand awareness across all relevant platforms.</p>
       </div>
     </div>
   </section>
 
   <!-- Portfolio Section -->
   <section id="portfolio" class="portfolio">
-    <h2>Some Of Our Work</h2>
+    <h2>Our Work</h2>
     <div class="portfolio-grid">
       <div class="portfolio-item">
-        <img src="photos/portfolio_1.png" alt="Project 1">
-        <h3>Birla Estate</h3>
-        <p>
-          A strategic billboard campaign in Bandra helped Birla Estate achieve remarkable visibility 
-          and a surge in sales, proving the power of targeted outdoor marketing.
-        </p>
+        <img src="photos/neon.jpeg" alt="Neon Brand Campaign">
+        <h3>Neon Brand Campaign</h3>
+        <p>A vibrant rebranding campaign that increased engagement by 156% for a tech startup.</p>
       </div>
       <div class="portfolio-item">
-        <img src="photos/portfolio_2.png" alt="Project 2">
-        <h3>Meta</h3>
-        <p>
-          Meta's 'Fuel for India 2021' billboard in Bandra captured attention with powerful storytelling, 
-          driving engagement and brand impact.
-        </p>
+        <img src="photos/luxury.jpeg" alt="Luxury Product Launch">
+        <h3>Luxury Product Launch</h3>
+        <p>An elegant product launch campaign that generated $2.4M in first-month sales.</p>
       </div>
       <div class="portfolio-item">
-        <img src="photos/portfolio_3.png" alt="Project 3">
-        <h3>Social Marketing</h3>
-        <p>
-          Driving engagement and brand loyalty, our social marketing strategies turn conversations into conversions.
-        </p>
+        <img src="photos/social media.jpeg" alt="Social Media Takeover">
+        <h3>Social Media Takeover</h3>
+        <p>A coordinated social campaign that reached 3.5M users across 5 platforms.</p>
+      </div>
+      <div class="portfolio-item">
+        <img src="photos/website design.jpeg" alt="E-commerce Redesign">
+        <h3>E-commerce Redesign</h3>
+        <p>A complete website overhaul that improved conversion rates by 83%.</p>
+      </div>
+      <div class="portfolio-item">
+        <img src="photos/video ad.png" alt="Video Ad Series">
+        <h3>Video Ad Series</h3>
+        <p>An award-winning video campaign with over 12M views and 45% engagement.</p>
+      </div>
+      <div class="portfolio-item">
+        <img src="photos/interactive.jpeg" alt="Interactive Experience">
+        <h3>Interactive Experience</h3>
+        <p>An immersive digital experience that generated 28K qualified leads.</p>
       </div>
     </div>
   </section>
 
-  <!-- Customer Reviews Section -->
+  <!-- Reviews Section -->
   <section id="reviews" class="reviews">
-    <h2>Customer Reviews</h2>
+    <h2>Client Reviews</h2>
     <p>Don't just take our word for it. Here's what our clients have to say about working with Creative Kings.</p>
     
     <div class="reviews-container">
       <div class="reviews-slider">
-        <!-- Review Card 1 -->
         <div class="review-card">
           <div class="review-header">
             <img src="photos/sarah.png" alt="Sarah Johnson" class="reviewer-image">
             <div class="reviewer-info">
-              <h4 class="reviewer-name">Sarah Johnson</h4>
-              <p class="reviewer-title">Marketing Director, TechSolve</p>
+              <div class="reviewer-name">Sarah Johnson</div>
+              <div class="reviewer-title">Marketing Director, TechFusion</div>
             </div>
           </div>
-          <p class="review-text">
-            "Creative Kings transformed our entire brand identity. Their strategic approach and creativity 
-            helped us stand out in a crowded market. We've seen a 40% increase in engagement since launching 
-            our new campaign!"
-          </p>
+          <p class="review-text">"Working with Creative Kings transformed our digital presence. Their team delivered beyond our expectations with their creativity and strategic approach."</p>
           <div class="review-rating">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -127,20 +1088,15 @@
           </div>
         </div>
         
-        <!-- Review Card 2 -->
         <div class="review-card">
           <div class="review-header">
             <img src="photos/micheal.png" alt="Michael Chen" class="reviewer-image">
             <div class="reviewer-info">
-              <h4 class="reviewer-name">Michael Chen</h4>
-              <p class="reviewer-title">CEO, Evolve Fitness</p>
+              <div class="reviewer-name">Michael Chen</div>
+              <div class="reviewer-title">CEO, Quantum Retail</div>
             </div>
           </div>
-          <p class="review-text">
-            "Working with Creative Kings was a game-changer for our business. Their billboard campaign 
-            generated immediate results, and their digital strategy continues to deliver month after month. 
-            Highly recommended!"
-          </p>
+          <p class="review-text">"The ROI from our campaigns with Creative Kings has been outstanding. Their ability to understand our brand and translate it into meaningful content is unmatched."</p>
           <div class="review-rating">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -150,20 +1106,15 @@
           </div>
         </div>
         
-        <!-- Review Card 3 -->
         <div class="review-card">
           <div class="review-header">
-            <img src="photos/priya.png" alt="Priya Sharma" class="reviewer-image">
+            <img src="photos/anjali.png" alt="Emily Rodriguez" class="reviewer-image">
             <div class="reviewer-info">
-              <h4 class="reviewer-name">Priya Sharma</h4>
-              <p class="reviewer-title">Brand Manager, Luxe Living</p>
+              <div class="reviewer-name">Emily Rodriguez</div>
+              <div class="reviewer-title">Brand Manager, Elevate Fitness</div>
             </div>
           </div>
-          <p class="review-text">
-            "The team at Creative Kings truly understands the luxury market. Their attention to detail and 
-            innovative approach to our campaign exceeded our expectations. Our sales increased by 35% in 
-            just three months!"
-          </p>
+          <p class="review-text">"The team at Creative Kings truly understands how to create campaigns that not only look stunning but actually drive real business results. Highly recommended!"</p>
           <div class="review-rating">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -173,77 +1124,25 @@
           </div>
         </div>
         
-        <!-- Review Card 4 -->
         <div class="review-card">
           <div class="review-header">
-            <img src="photos/salman.png" alt="Salman Ali" class="reviewer-image">
+            <img src="photos/salman.png" alt="David Wilson" class="reviewer-image">
             <div class="reviewer-info">
-              <h4 class="reviewer-name">Salman Ali</h4>
-              <p class="reviewer-title">CMO, Ali Eats</p>
+              <div class="reviewer-name">David Wilson</div>
+              <div class="reviewer-title">Founder, Nexus Solutions</div>
             </div>
           </div>
-          <p class="review-text">
-            "From concept to execution, Creative Kings delivered a campaign that perfectly captured our 
-            brand's essence. Their team was responsive, creative, and focused on results. We couldn't be 
-            happier with the outcome."
-          </p>
+          <p class="review-text">"From day one, Creative Kings has been an exceptional partner. Their attention to detail and commitment to excellence has helped us achieve our ambitious growth goals."</p>
           <div class="review-rating">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
-          </div>
-        </div>
-        
-        <!-- Review Card 5 -->
-        <div class="review-card">
-          <div class="review-header">
-            <img src="photos/anjali.png" alt="Anjali Patel" class="reviewer-image">
-            <div class="reviewer-info">
-              <h4 class="reviewer-name">Anjali Patel</h4>
-              <p class="reviewer-title">Founder, Bloom Beauty</p>
-            </div>
-          </div>
-          <p class="review-text">
-            "As a startup with a limited budget, we were concerned about marketing ROI. Creative Kings 
-            developed a targeted strategy that maximized our impact. Their creativity and business acumen 
-            make them standout partners."
-          </p>
-          <div class="review-rating">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-          </div>
-        </div>
-        
-        <!-- Review Card 6 -->
-        <div class="review-card">
-          <div class="review-header">
-            <img src="photos/rahul.png" alt="Rahul Mehra" class="reviewer-image">
-            <div class="reviewer-info">
-              <h4 class="reviewer-name">Rahul Mehra</h4>
-              <p class="reviewer-title">Director, Global Reach</p>
-            </div>
-          </div>
-          <p class="review-text">
-            "Creative Kings helped us navigate a complex rebranding process with professionalism and 
-            expertise. Their strategic insights and creative execution transformed our market position. 
-            A truly exceptional agency."
-          </p>
-          <div class="review-rating">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
           </div>
         </div>
       </div>
       
-      <!-- Slider Navigation -->
       <div class="slider-nav">
         <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
         <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
@@ -253,20 +1152,85 @@
 
   <!-- Contact Section -->
   <section id="contact" class="contact">
-    <h2 style="color: whitesmoke;">Contact Us</h2>
+    <h2>Get In Touch</h2>
     <form>
       <input type="text" placeholder="Your Name" required>
       <input type="email" placeholder="Your Email" required>
-      <textarea placeholder="Your Message" rows="5" required></textarea>
+      <input type="text" placeholder="Subject">
+      <textarea rows="5" placeholder="Your Message" required></textarea>
       <button type="submit">Send Message</button>
     </form>
   </section>
 
   <!-- Footer -->
   <footer>
-    <p>&copy; 2023 Creative Kings. All rights reserved. | <a href="#">Privacy Policy</a></p>
+    <p>&copy; 2025 Creative Kings. All rights reserved. Designed with <i class="fas fa-heart" style="color: var(--secondary);"></i> by Creative Kings</p>
   </footer>
 
-  <script src="main.js"></script>
+  <!-- JavaScript -->
+  <script>
+    // Mobile Menu Toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const nav = document.querySelector('nav');
+    
+    menuToggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+    });
+    
+    // Close menu when clicking on a link
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('active');
+      });
+    });
+    
+    // Header Background Change on Scroll
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
+    // Reveal animations on scroll
+    const observerOptions = {
+      threshold: 0.2
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+    
+    const elements = document.querySelectorAll('.about, .service-card, .portfolio-item, .review-card');
+    elements.forEach(el => {
+      observer.observe(el);
+    });
+    
+    // Reviews Slider Controls
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    const slider = document.querySelector('.reviews-slider');
+    
+    prevBtn.addEventListener('click', () => {
+      slider.scrollBy({
+        left: -300,
+        behavior: 'smooth'
+      });
+    });
+    
+    nextBtn.addEventListener('click', () => {
+      slider.scrollBy({
+        left: 300,
+        behavior: 'smooth'
+      });
+    });
+  </script>
 </body>
 </html>
